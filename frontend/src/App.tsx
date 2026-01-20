@@ -4,6 +4,7 @@ import { DataTable } from './components/DataTable';
 import { Visualization } from './components/Visualization';
 import { SavedQueries } from './components/SavedQueries';
 import { DatasetSelector } from './components/DatasetSelector';
+import { ERDDiagram } from './components/ERDDiagram';
 import { useDatabase } from './hooks/useDatabase';
 import { useSavedQueries } from './hooks/useSavedQueries';
 import { fetchBusinessData, fetchDatasets, generateSQL } from './services/api';
@@ -40,7 +41,7 @@ const DATASET_SUGGESTIONS: Record<string, string[]> = {
 function App() {
   const [currentDataset, setCurrentDataset] = useState('sales');
   const [datasets, setDatasets] = useState<DatasetsMap>({});
-  const { initDatabase, executeQuery, isLoading: dbLoading, isReady, schema } = useDatabase();
+  const { initDatabase, executeQuery, isLoading: dbLoading, isReady, schema, erdSchema, schemaVersion } = useDatabase();
   const { savedQueries, saveQuery, deleteQuery } = useSavedQueries(currentDataset);
 
   const [queryResult, setQueryResult] = useState<QueryResult | null>(null);
@@ -50,6 +51,7 @@ function App() {
   const [vizScript, setVizScript] = useState<string | null>(null);
   const [isQuerying, setIsQuerying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [erdExpanded, setErdExpanded] = useState(false);
 
   useEffect(() => {
     async function loadDatasets() {
@@ -197,6 +199,23 @@ function App() {
             disabled={!isReady}
             suggestions={DATASET_SUGGESTIONS[currentDataset]}
           />
+
+          <div className="erd-section">
+            <button
+              className="erd-toggle"
+              onClick={() => setErdExpanded(!erdExpanded)}
+            >
+              <span>Schema Diagram</span>
+              <span className={`erd-toggle-icon ${erdExpanded ? 'expanded' : ''}`}>
+                ▼
+              </span>
+            </button>
+            {erdExpanded && erdSchema && (
+              <div className="erd-content">
+                <ERDDiagram key={schemaVersion} schema={erdSchema} datasetId={currentDataset} />
+              </div>
+            )}
+          </div>
 
           <div className="results-section">
             <h2>Results</h2>
