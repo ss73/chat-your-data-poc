@@ -7,9 +7,13 @@ A proof-of-concept web application that lets you query business data using natur
 ## Features
 
 - **Natural Language Queries** - Ask questions like "Show me total sales by region" and get SQL + results
+- **Multiple Datasets** - Switch between 5 sample datasets: Sales, HR, Inventory, Support, Security
 - **In-Browser SQL** - Queries run locally using WASM SQLite (sql.js) - no round-trips for execution
+- **Schema Explorer** - Interactive ERD diagram and data browser with pagination
 - **Secure Visualizations** - LLM generates JavaScript that runs in a Web Worker sandbox (no DOM/network access)
 - **Save & Restore** - Save queries with their visualization scripts to localStorage
+- **Dark/Light Theme** - Toggle between themes with automatic persistence
+- **Editable SQL** - Modify generated SQL and re-run queries directly
 
 ## Architecture
 
@@ -84,19 +88,39 @@ npm run dev
 
 Open http://localhost:5173 in your browser.
 
-## Sample Data
+## Sample Datasets
 
-The app includes realistic sample business data:
-- **Products** - 20 items across 5 categories
-- **Customers** - 50 customers across 4 regions
-- **Sales** - 500 transactions
+The app includes 5 realistic sample datasets:
+
+| Dataset | Tables | Description |
+|---------|--------|-------------|
+| **Sales** | products, customers, sales | E-commerce transactions with 500 sales records |
+| **HR** | departments, employees, performance_reviews | Employee data with salaries and reviews |
+| **Inventory** | warehouses, suppliers, products, stock_levels | Warehouse stock management |
+| **Support** | customers, agents, tickets | Customer support ticket tracking |
+| **Security** | sites, officers, patrol_specifications, patrols, patrol_reports | Security patrol management |
 
 ## Example Queries
 
+**Sales:**
 - "Show me total sales by region"
 - "What are the top 5 products by revenue?"
-- "Which customers have spent the most?"
-- "Show monthly sales trend"
+
+**HR:**
+- "Show average salary by department"
+- "Which employees have the highest performance scores?"
+
+**Inventory:**
+- "Which products are below reorder level?"
+- "Show total stock by warehouse"
+
+**Support:**
+- "Show ticket count by priority"
+- "What is the average resolution time by category?"
+
+**Security:**
+- "How many patrols had deviations last month?"
+- "Which sites have the most checkpoints?"
 
 ## Tech Stack
 
@@ -106,6 +130,7 @@ The app includes realistic sample business data:
 | Frontend | sql.js | WASM SQLite for in-browser queries |
 | Frontend | react-data-grid | Spreadsheet-like table display |
 | Frontend | Plotly.js | Visualization rendering |
+| Frontend | @xyflow/react | ERD diagram visualization |
 | Frontend | Web Worker | Secure sandbox for scripts |
 | Backend | FastAPI | REST API server |
 | Backend | Azure OpenAI SDK | LLM integration |

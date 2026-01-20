@@ -46,6 +46,7 @@ A web application that allows users to chat with business data using natural lan
 | Frontend | sql.js | WASM SQLite for in-browser queries |
 | Frontend | react-data-grid | Spreadsheet-like table display |
 | Frontend | Plotly.js | Visualization rendering |
+| Frontend | @xyflow/react | ERD diagram visualization |
 | Frontend | Web Worker | Secure sandbox for visualization scripts |
 | Frontend | localStorage | Persist saved queries and scripts |
 | Backend | Python 3.11+ FastAPI | REST API server |
@@ -72,6 +73,9 @@ chat-your-data-poc/
 │   │   ├── components/
 │   │   │   ├── ChatInput.tsx
 │   │   │   ├── DataTable.tsx
+│   │   │   ├── DatasetSelector.tsx
+│   │   │   ├── DataExplorer.tsx
+│   │   │   ├── ERDDiagram.tsx
 │   │   │   ├── Visualization.tsx
 │   │   │   └── SavedQueries.tsx
 │   │   ├── hooks/
@@ -138,10 +142,30 @@ chat-your-data-poc/
 2. Style with CSS (clean, minimal UI)
 3. Add sample queries as suggestions
 
+### Phase 8: Enhanced Features (Implemented)
+1. **Multiple Datasets** - Add dataset selector, create HR/Inventory/Support/Security datasets
+2. **Schema Explorer** - ERD diagram with React Flow, Data Explorer with table browser
+3. **Dark/Light Theme** - Theme toggle with CSS variables, localStorage persistence
+4. **Editable SQL** - Allow users to modify generated SQL and re-run
+5. **Chart Customization** - Hint input for chart type, custom script editor
+6. **Theme-aware Charts** - Plotly charts adapt to light/dark theme
+
 ## API Endpoints
 
-### GET /api/data
-Returns business data to populate the frontend database.
+### GET /api/datasets
+Returns available dataset names and descriptions.
+```json
+{
+  "sales": "E-commerce sales data",
+  "hr": "Human resources data",
+  "inventory": "Warehouse inventory data",
+  "support": "Customer support tickets",
+  "security": "Security patrol data"
+}
+```
+
+### GET /api/data?dataset=sales
+Returns business data for the specified dataset to populate the frontend database.
 ```json
 {
   "tables": {
@@ -195,10 +219,35 @@ Generates JavaScript code that transforms query results into a Plotly configurat
 The generated script receives `columns` (string[]) and `rows` (array of arrays) and must return a Plotly config object with `data` and `layout` properties.
 
 ## Sample Business Data
-For the PoC, generate realistic sample data:
-- **sales**: 500 rows of transactions (date, product, customer, amount)
-- **products**: 20 products across 5 categories
-- **customers**: 50 customers across 4 regions
+The PoC includes 5 sample datasets with realistic generated data:
+
+**Sales Dataset:**
+- products: 20 products across 5 categories
+- customers: 50 customers across 4 regions
+- sales: 500 transactions
+
+**HR Dataset:**
+- departments: Company departments with locations
+- employees: Employee records with salaries
+- performance_reviews: Annual performance reviews
+
+**Inventory Dataset:**
+- warehouses: Warehouse locations
+- suppliers: Product suppliers
+- products: Inventory items with reorder levels
+- stock_levels: Current stock per warehouse
+
+**Support Dataset:**
+- customers: Support customers with plan tiers
+- agents: Support agents by department
+- tickets: Support tickets with priorities and resolution times
+
+**Security Dataset:**
+- sites: Security patrol sites
+- officers: Security officers
+- patrol_specifications: Patrol routes with checkpoints
+- patrols: Completed patrol records
+- patrol_reports: Patrol reports with deviation tracking
 
 ## Environment Variables
 
