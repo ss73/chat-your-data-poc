@@ -44,11 +44,32 @@ export function DataExplorer({ tableNames, onQueryTable, onCountTable }: DataExp
     setHasMore(hasMoreRows);
   };
 
+  const handleLoadAll = () => {
+    if (!selectedTable) return;
+    const remaining = totalCount - loadedCount;
+    const result = onQueryTable(selectedTable, remaining, loadedCount);
+    setTableData((prev) => prev ? {
+      columns: prev.columns,
+      rows: [...prev.rows, ...result.rows],
+    } : null);
+    setLoadedCount(totalCount);
+    setHasMore(false);
+  };
+
   const columns = tableData?.columns.map((col) => ({
     key: col,
     name: col,
     resizable: true,
     minWidth: 80,
+    renderCell: ({ row }: { row: Record<string, unknown> }) => {
+      const value = row[col];
+      const stringValue = value == null ? '' : String(value);
+      return (
+        <div className="cell-content" title={stringValue}>
+          {stringValue}
+        </div>
+      );
+    },
   })) ?? [];
 
   const rows = tableData?.rows.map((row, idx) => {
@@ -87,6 +108,10 @@ export function DataExplorer({ tableNames, onQueryTable, onCountTable }: DataExp
                     {loadedCount} of {totalCount} rows (
                     <button className="load-more-link" onClick={handleLoadMore}>
                       load more
+                    </button>
+                    {' | '}
+                    <button className="load-more-link" onClick={handleLoadAll}>
+                      load all
                     </button>
                     )
                   </>
