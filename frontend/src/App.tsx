@@ -73,6 +73,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [erdExpanded, setErdExpanded] = useState(false);
   const [schemaTab, setSchemaTab] = useState<'schema' | 'data'>('schema');
+  const [inputResetKey, setInputResetKey] = useState(0);
 
   const tableNames = useMemo(() => {
     return erdSchema?.tables.map(t => t.name) ?? [];
@@ -161,6 +162,7 @@ function App() {
       setVizScript(query.vizScript ?? null);
       setVizConfig(null);
       setError(null);
+      setInputResetKey((k) => k + 1);
 
       try {
         const result = executeQuery(query.sql);
@@ -246,6 +248,7 @@ function App() {
           {error && <div className="error-banner">{error}</div>}
 
           <ChatInput
+            key={`${currentDataset}-${inputResetKey}`}
             onSubmit={handleQuery}
             isLoading={isQuerying}
             disabled={!isReady}
