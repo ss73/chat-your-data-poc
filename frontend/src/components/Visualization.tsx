@@ -28,7 +28,49 @@ interface VisualizationProps {
   onConfigChange: (config: PlotlyConfig) => void;
   vizScript: string | null;
   onScriptChange: (script: string | null) => void;
+  theme: 'light' | 'dark';
 }
+
+const THEME_COLORS = {
+  light: {
+    paper_bgcolor: '#ffffff',
+    plot_bgcolor: '#ffffff',
+    font: { color: '#374151' },
+    xaxis: {
+      gridcolor: '#e5e7eb',
+      linecolor: '#d1d5db',
+      tickcolor: '#9ca3af',
+    },
+    yaxis: {
+      gridcolor: '#e5e7eb',
+      linecolor: '#d1d5db',
+      tickcolor: '#9ca3af',
+    },
+    legend: {
+      bgcolor: 'transparent',
+      font: { color: '#374151' },
+    },
+  },
+  dark: {
+    paper_bgcolor: '#1f2937',
+    plot_bgcolor: '#1f2937',
+    font: { color: '#f9fafb' },
+    xaxis: {
+      gridcolor: '#374151',
+      linecolor: '#4b5563',
+      tickcolor: '#9ca3af',
+    },
+    yaxis: {
+      gridcolor: '#374151',
+      linecolor: '#4b5563',
+      tickcolor: '#9ca3af',
+    },
+    legend: {
+      bgcolor: 'transparent',
+      font: { color: '#f9fafb' },
+    },
+  },
+};
 
 export function Visualization({
   result,
@@ -36,6 +78,7 @@ export function Visualization({
   onConfigChange,
   vizScript,
   onScriptChange,
+  theme,
 }: VisualizationProps) {
   const [hint, setHint] = useState('');
   const [showEditor, setShowEditor] = useState(false);
@@ -223,11 +266,21 @@ export function Visualization({
         <>
           <div className="viz-plot" ref={plotContainerRef}>
             <Plot
+              key={theme}
               data={vizConfig.data}
               layout={{
                 ...vizConfig.layout,
+                ...THEME_COLORS[theme],
                 autosize: true,
                 height: Math.min(Math.max(vizConfig.layout.height ?? 400, 200), 800),
+                xaxis: {
+                  ...vizConfig.layout.xaxis,
+                  ...THEME_COLORS[theme].xaxis,
+                },
+                yaxis: {
+                  ...vizConfig.layout.yaxis,
+                  ...THEME_COLORS[theme].yaxis,
+                },
               }}
               useResizeHandler
               config={{ responsive: true }}

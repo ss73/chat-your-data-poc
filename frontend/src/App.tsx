@@ -311,6 +311,7 @@ function App() {
               onConfigChange={setVizConfig}
               vizScript={vizScript}
               onScriptChange={setVizScript}
+              theme={theme}
             />
           </div>
         </main>
