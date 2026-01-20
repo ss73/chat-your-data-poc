@@ -467,7 +467,6 @@ body {
   border: 1px solid var(--border-primary);
   border-radius: 6px;
   overflow: hidden;
-  max-height: 500px;
   background: var(--bg-secondary);
 }
 
