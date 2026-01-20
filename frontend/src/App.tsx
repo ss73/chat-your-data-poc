@@ -69,6 +69,11 @@ function App() {
     return executeQuery(`SELECT * FROM ${tableName} LIMIT ${limit} OFFSET ${offset}`);
   }, [executeQuery]);
 
+  const handleCountTable = useCallback((tableName: string): number => {
+    const result = executeQuery(`SELECT COUNT(*) as count FROM ${tableName}`);
+    return result.rows[0]?.[0] as number ?? 0;
+  }, [executeQuery]);
+
   useEffect(() => {
     async function loadDatasets() {
       try {
@@ -250,6 +255,7 @@ function App() {
                     key={currentDataset}
                     tableNames={tableNames}
                     onQueryTable={handleQueryTable}
+                    onCountTable={handleCountTable}
                   />
                 )}
               </div>

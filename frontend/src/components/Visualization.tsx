@@ -203,9 +203,11 @@ export function Visualization({
               layout={{
                 ...vizConfig.layout,
                 autosize: true,
+                height: Math.min(Math.max(vizConfig.layout.height ?? 400, 200), 800),
               }}
               useResizeHandler
-              style={{ width: '100%', height: '400px' }}
+              config={{ responsive: true }}
+              style={{ width: '100%' }}
             />
           </div>
 

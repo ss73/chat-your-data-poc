@@ -7,16 +7,20 @@ const ROW_LIMIT = 100;
 interface DataExplorerProps {
   tableNames: string[];
   onQueryTable: (tableName: string, limit: number, offset: number) => QueryResult;
+  onCountTable: (tableName: string) => number;
 }
 
-export function DataExplorer({ tableNames, onQueryTable }: DataExplorerProps) {
+export function DataExplorer({ tableNames, onQueryTable, onCountTable }: DataExplorerProps) {
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [tableData, setTableData] = useState<QueryResult | null>(null);
   const [loadedCount, setLoadedCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const [hasMore, setHasMore] = useState(false);
 
   const handleTableClick = (tableName: string) => {
     setSelectedTable(tableName);
+    const total = onCountTable(tableName);
+    setTotalCount(total);
     const result = onQueryTable(tableName, ROW_LIMIT + 1, 0);
     const hasMoreRows = result.rows.length > ROW_LIMIT;
     setTableData({
@@ -78,15 +82,16 @@ export function DataExplorer({ tableNames, onQueryTable }: DataExplorerProps) {
             <div className="data-explorer-header">
               <span className="data-explorer-table-name">{selectedTable}</span>
               <span className="data-explorer-row-count">
-                {loadedCount} rows loaded
-                {hasMore && (
+                {hasMore ? (
                   <>
-                    {' ('}
+                    {loadedCount} of {totalCount} rows (
                     <button className="load-more-link" onClick={handleLoadMore}>
                       load more
                     </button>
-                    {')'}
+                    )
                   </>
+                ) : (
+                  <>{loadedCount} rows</>
                 )}
               </span>
             </div>
