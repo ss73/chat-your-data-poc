@@ -2,19 +2,42 @@ import { useState } from 'react';
 import { DataGrid } from 'react-data-grid';
 import type { QueryResult } from '../types';
 
+const ROW_LIMIT = 100;
+
 interface DataExplorerProps {
   tableNames: string[];
-  onQueryTable: (tableName: string) => QueryResult;
+  onQueryTable: (tableName: string, limit: number, offset: number) => QueryResult;
 }
 
 export function DataExplorer({ tableNames, onQueryTable }: DataExplorerProps) {
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [tableData, setTableData] = useState<QueryResult | null>(null);
+  const [loadedCount, setLoadedCount] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
 
   const handleTableClick = (tableName: string) => {
     setSelectedTable(tableName);
-    const result = onQueryTable(tableName);
-    setTableData(result);
+    const result = onQueryTable(tableName, ROW_LIMIT + 1, 0);
+    const hasMoreRows = result.rows.length > ROW_LIMIT;
+    setTableData({
+      columns: result.columns,
+      rows: hasMoreRows ? result.rows.slice(0, ROW_LIMIT) : result.rows,
+    });
+    setLoadedCount(Math.min(result.rows.length, ROW_LIMIT));
+    setHasMore(hasMoreRows);
+  };
+
+  const handleLoadMore = () => {
+    if (!selectedTable) return;
+    const result = onQueryTable(selectedTable, ROW_LIMIT + 1, loadedCount);
+    const hasMoreRows = result.rows.length > ROW_LIMIT;
+    const newRows = hasMoreRows ? result.rows.slice(0, ROW_LIMIT) : result.rows;
+    setTableData((prev) => prev ? {
+      columns: prev.columns,
+      rows: [...prev.rows, ...newRows],
+    } : null);
+    setLoadedCount((prev) => prev + newRows.length);
+    setHasMore(hasMoreRows);
   };
 
   const columns = tableData?.columns.map((col) => ({
@@ -54,7 +77,18 @@ export function DataExplorer({ tableNames, onQueryTable }: DataExplorerProps) {
           <>
             <div className="data-explorer-header">
               <span className="data-explorer-table-name">{selectedTable}</span>
-              <span className="data-explorer-row-count">{tableData.rows.length} rows</span>
+              <span className="data-explorer-row-count">
+                {loadedCount} rows loaded
+                {hasMore && (
+                  <>
+                    {' ('}
+                    <button className="load-more-link" onClick={handleLoadMore}>
+                      load more
+                    </button>
+                    {')'}
+                  </>
+                )}
+              </span>
             </div>
             <div className="data-explorer-grid">
               <DataGrid

@@ -59,8 +59,8 @@ function App() {
     return erdSchema?.tables.map(t => t.name) ?? [];
   }, [erdSchema]);
 
-  const handleQueryTable = useCallback((tableName: string): QueryResult => {
-    return executeQuery(`SELECT * FROM ${tableName}`);
+  const handleQueryTable = useCallback((tableName: string, limit: number, offset: number): QueryResult => {
+    return executeQuery(`SELECT * FROM ${tableName} LIMIT ${limit} OFFSET ${offset}`);
   }, [executeQuery]);
 
   useEffect(() => {

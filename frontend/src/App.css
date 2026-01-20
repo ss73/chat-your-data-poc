@@ -843,3 +843,17 @@ body {
   color: #9ca3af;
   font-size: 0.9rem;
 }
+
+.load-more-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #667eea;
+  text-decoration: underline;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.load-more-link:hover {
+  color: #5a67d8;
+}
