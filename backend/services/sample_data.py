@@ -283,7 +283,7 @@ def generate_inventory_data():
 
 TICKET_CATEGORIES = ["Technical Issue", "Billing", "Feature Request", "Account Access", "Bug Report", "General Inquiry"]
 PRIORITIES = ["Low", "Medium", "High", "Critical"]
-STATUSES = ["Open", "In Progress", "Waiting on Customer", "Resolved", "Closed"]
+STATUSES = ["open", "in_progress", "waiting_on_customer", "resolved", "closed"]
 
 
 def generate_support_data():
@@ -320,16 +320,19 @@ def generate_support_data():
             "team": random.choice(teams)
         })
 
-    # Tickets
+    # Tickets - ensure a realistic distribution of statuses
+    # ~20% open, ~15% in_progress, ~10% waiting, ~30% resolved, ~25% closed
     tickets = []
     start_date = datetime(2024, 1, 1)
+    status_weights = ["open"] * 20 + ["in_progress"] * 15 + ["waiting_on_customer"] * 10 + ["resolved"] * 30 + ["closed"] * 25
+
     for i in range(1, 301):
         customer = random.choice(customers)
         agent = random.choice(agents)
         created = start_date + timedelta(days=random.randint(0, 300), hours=random.randint(0, 23))
-        status = random.choice(STATUSES)
+        status = random.choice(status_weights)
         resolved = None
-        if status in ["Resolved", "Closed"]:
+        if status in ["resolved", "closed"]:
             resolved = created + timedelta(hours=random.randint(1, 72))
         tickets.append({
             "id": i,

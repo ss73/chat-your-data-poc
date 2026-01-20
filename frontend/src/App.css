@@ -721,3 +721,125 @@ body {
   background: #667eea;
   border: 2px solid white;
 }
+
+/* Schema/Data Tabs */
+.schema-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.schema-tab {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+}
+
+.schema-tab:hover {
+  color: #374151;
+}
+
+.schema-tab.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
+/* Data Explorer */
+.data-explorer {
+  display: flex;
+  height: 400px;
+}
+
+.data-explorer-sidebar {
+  width: 180px;
+  flex-shrink: 0;
+  border-right: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.data-explorer-title {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.data-explorer-tables {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  max-height: calc(400px - 40px);
+}
+
+.data-explorer-table-btn {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.85rem;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.data-explorer-table-btn:hover {
+  background: #e5e7eb;
+}
+
+.data-explorer-table-btn.selected {
+  background: #667eea;
+  color: white;
+}
+
+.data-explorer-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.data-explorer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.data-explorer-table-name {
+  font-weight: 600;
+  color: #374151;
+}
+
+.data-explorer-row-count {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.data-explorer-grid {
+  flex: 1;
+  overflow: hidden;
+}
+
+.data-explorer-grid .data-grid {
+  height: 100%;
+}
+
+.data-explorer-placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}

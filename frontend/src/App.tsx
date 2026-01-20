@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { ChatInput } from './components/ChatInput';
 import { DataTable } from './components/DataTable';
 import { Visualization } from './components/Visualization';
 import { SavedQueries } from './components/SavedQueries';
 import { DatasetSelector } from './components/DatasetSelector';
 import { ERDDiagram } from './components/ERDDiagram';
+import { DataExplorer } from './components/DataExplorer';
 import { useDatabase } from './hooks/useDatabase';
 import { useSavedQueries } from './hooks/useSavedQueries';
 import { fetchBusinessData, fetchDatasets, generateSQL } from './services/api';
@@ -52,6 +53,15 @@ function App() {
   const [isQuerying, setIsQuerying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [erdExpanded, setErdExpanded] = useState(false);
+  const [schemaTab, setSchemaTab] = useState<'schema' | 'data'>('schema');
+
+  const tableNames = useMemo(() => {
+    return erdSchema?.tables.map(t => t.name) ?? [];
+  }, [erdSchema]);
+
+  const handleQueryTable = useCallback((tableName: string): QueryResult => {
+    return executeQuery(`SELECT * FROM ${tableName}`);
+  }, [executeQuery]);
 
   useEffect(() => {
     async function loadDatasets() {
@@ -205,14 +215,37 @@ function App() {
               className="erd-toggle"
               onClick={() => setErdExpanded(!erdExpanded)}
             >
-              <span>Schema Diagram</span>
+              <span>Schema & Data</span>
               <span className={`erd-toggle-icon ${erdExpanded ? 'expanded' : ''}`}>
                 ▼
               </span>
             </button>
-            {erdExpanded && erdSchema && (
+            {erdExpanded && (
               <div className="erd-content">
-                <ERDDiagram key={schemaVersion} schema={erdSchema} datasetId={currentDataset} />
+                <div className="schema-tabs">
+                  <button
+                    className={`schema-tab ${schemaTab === 'schema' ? 'active' : ''}`}
+                    onClick={() => setSchemaTab('schema')}
+                  >
+                    Schema Diagram
+                  </button>
+                  <button
+                    className={`schema-tab ${schemaTab === 'data' ? 'active' : ''}`}
+                    onClick={() => setSchemaTab('data')}
+                  >
+                    Explore Data
+                  </button>
+                </div>
+                {schemaTab === 'schema' && erdSchema && (
+                  <ERDDiagram key={schemaVersion} schema={erdSchema} datasetId={currentDataset} />
+                )}
+                {schemaTab === 'data' && tableNames.length > 0 && (
+                  <DataExplorer
+                    key={currentDataset}
+                    tableNames={tableNames}
+                    onQueryTable={handleQueryTable}
+                  />
+                )}
               </div>
             )}
           </div>
