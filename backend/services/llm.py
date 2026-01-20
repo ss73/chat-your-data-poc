@@ -34,6 +34,7 @@ Rules:
 - Return ONLY the SQL query, no explanations or markdown
 - Use appropriate JOINs when querying across tables
 - Use meaningful column aliases for aggregations
+- Boolean values are stored as 0 (false) or 1 (true), not 'yes'/'no' or 'true'/'false'
 - Limit results to 100 rows unless specified otherwise"""
 
     response = llm.chat.completions.create(
