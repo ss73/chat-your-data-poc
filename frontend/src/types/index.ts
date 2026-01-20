@@ -26,3 +26,12 @@ export interface PlotlyConfig {
   data: Plotly.Data[];
   layout: Partial<Plotly.Layout>;
 }
+
+export interface DatasetInfo {
+  name: string;
+  description: string;
+}
+
+export interface DatasetsMap {
+  [key: string]: DatasetInfo;
+}

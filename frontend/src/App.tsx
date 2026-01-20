@@ -3,15 +3,45 @@ import { ChatInput } from './components/ChatInput';
 import { DataTable } from './components/DataTable';
 import { Visualization } from './components/Visualization';
 import { SavedQueries } from './components/SavedQueries';
+import { DatasetSelector } from './components/DatasetSelector';
 import { useDatabase } from './hooks/useDatabase';
 import { useSavedQueries } from './hooks/useSavedQueries';
-import { fetchBusinessData, generateSQL } from './services/api';
-import type { QueryResult, PlotlyConfig, SavedQuery } from './types';
+import { fetchBusinessData, fetchDatasets, generateSQL } from './services/api';
+import type { QueryResult, PlotlyConfig, SavedQuery, DatasetsMap } from './types';
 import './App.css';
 
+const DATASET_SUGGESTIONS: Record<string, string[]> = {
+  sales: [
+    'Show me total sales by region',
+    'What are the top 5 products by revenue?',
+    'Which customers have spent the most?',
+    'Show monthly sales trend',
+  ],
+  hr: [
+    'Show average salary by department',
+    'Which employees have the highest performance scores?',
+    'How many employees were hired each year?',
+    'List all departments and their locations',
+  ],
+  inventory: [
+    'Which products are below reorder level?',
+    'Show total stock by warehouse',
+    'Which suppliers provide the most products?',
+    'List products with their suppliers',
+  ],
+  support: [
+    'Show ticket count by priority',
+    'Which agents have resolved the most tickets?',
+    'What is the average resolution time by category?',
+    'Show open tickets by customer plan',
+  ],
+};
+
 function App() {
+  const [currentDataset, setCurrentDataset] = useState('sales');
+  const [datasets, setDatasets] = useState<DatasetsMap>({});
   const { initDatabase, executeQuery, isLoading: dbLoading, isReady, schema } = useDatabase();
-  const { savedQueries, saveQuery, deleteQuery } = useSavedQueries();
+  const { savedQueries, saveQuery, deleteQuery } = useSavedQueries(currentDataset);
 
   const [queryResult, setQueryResult] = useState<QueryResult | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState('');
@@ -22,17 +52,35 @@ function App() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    async function loadDatasets() {
+      try {
+        const datasetsData = await fetchDatasets();
+        setDatasets(datasetsData);
+      } catch (err) {
+        console.error('Failed to fetch datasets:', err);
+      }
+    }
+    loadDatasets();
+  }, []);
+
+  useEffect(() => {
     async function loadData() {
       try {
-        const data = await fetchBusinessData();
+        const data = await fetchBusinessData(currentDataset);
         await initDatabase(data);
+        setQueryResult(null);
+        setCurrentQuestion('');
+        setCurrentSql('');
+        setVizConfig(null);
+        setVizScript(null);
+        setError(null);
       } catch (err) {
         setError('Failed to load business data. Make sure the backend is running.');
         console.error(err);
       }
     }
     loadData();
-  }, [initDatabase]);
+  }, [initDatabase, currentDataset]);
 
   const handleQuery = useCallback(
     async (question: string) => {
@@ -106,8 +154,20 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>Chat Your Data</h1>
-        <p className="subtitle">Ask questions about your business data in natural language</p>
+        <div className="header-content">
+          <div className="header-title">
+            <h1>Chat Your Data</h1>
+            <p className="subtitle">Ask questions about your business data in natural language</p>
+          </div>
+          {Object.keys(datasets).length > 0 && (
+            <DatasetSelector
+              datasets={datasets}
+              selected={currentDataset}
+              onSelect={setCurrentDataset}
+              disabled={dbLoading}
+            />
+          )}
+        </div>
       </header>
 
       <div className="main-content">
@@ -135,6 +195,7 @@ function App() {
             onSubmit={handleQuery}
             isLoading={isQuerying}
             disabled={!isReady}
+            suggestions={DATASET_SUGGESTIONS[currentDataset]}
           />
 
           <div className="results-section">

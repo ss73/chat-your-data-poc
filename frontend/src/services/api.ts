@@ -1,9 +1,17 @@
-import type { BusinessData } from '../types';
+import type { BusinessData, DatasetsMap } from '../types';
 
 const API_BASE = 'http://localhost:8000/api';
 
-export async function fetchBusinessData(): Promise<BusinessData> {
-  const response = await fetch(`${API_BASE}/data`);
+export async function fetchDatasets(): Promise<DatasetsMap> {
+  const response = await fetch(`${API_BASE}/datasets`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch datasets');
+  }
+  return response.json();
+}
+
+export async function fetchBusinessData(dataset: string = 'sales'): Promise<BusinessData> {
+  const response = await fetch(`${API_BASE}/data?dataset=${encodeURIComponent(dataset)}`);
   if (!response.ok) {
     throw new Error('Failed to fetch business data');
   }

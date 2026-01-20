@@ -4,9 +4,17 @@ interface ChatInputProps {
   onSubmit: (question: string) => void;
   isLoading: boolean;
   disabled: boolean;
+  suggestions?: string[];
 }
 
-export function ChatInput({ onSubmit, isLoading, disabled }: ChatInputProps) {
+const DEFAULT_SUGGESTIONS = [
+  'Show me total sales by region',
+  'What are the top 5 products by revenue?',
+  'Which customers have spent the most?',
+  'Show monthly sales trend',
+];
+
+export function ChatInput({ onSubmit, isLoading, disabled, suggestions = DEFAULT_SUGGESTIONS }: ChatInputProps) {
   const [question, setQuestion] = useState('');
 
   const handleSubmit = (e: FormEvent) => {
@@ -15,13 +23,6 @@ export function ChatInput({ onSubmit, isLoading, disabled }: ChatInputProps) {
       onSubmit(question.trim());
     }
   };
-
-  const suggestions = [
-    'Show me total sales by region',
-    'What are the top 5 products by revenue?',
-    'Which customers have spent the most?',
-    'Show monthly sales trend',
-  ];
 
   return (
     <div className="chat-input-container">
