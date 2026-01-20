@@ -48,6 +48,19 @@ const DATASET_SUGGESTIONS: Record<string, string[]> = {
 function App() {
   const [currentDataset, setCurrentDataset] = useState('sales');
   const [datasets, setDatasets] = useState<DatasetsMap>({});
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('theme');
+    return (saved === 'dark' ? 'dark' : 'light');
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
   const { initDatabase, executeQuery, isLoading: dbLoading, isReady, schema, erdSchema, schemaVersion } = useDatabase();
   const { savedQueries, saveQuery, deleteQuery } = useSavedQueries(currentDataset);
 
@@ -182,14 +195,32 @@ function App() {
             <h1>Chat Your Data</h1>
             <p className="subtitle">Ask questions about your business data in natural language</p>
           </div>
-          {Object.keys(datasets).length > 0 && (
-            <DatasetSelector
-              datasets={datasets}
-              selected={currentDataset}
-              onSelect={setCurrentDataset}
-              disabled={dbLoading}
-            />
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {Object.keys(datasets).length > 0 && (
+              <DatasetSelector
+                datasets={datasets}
+                selected={currentDataset}
+                onSelect={setCurrentDataset}
+                disabled={dbLoading}
+              />
+            )}
+            <button
+              className="theme-toggle"
+              onClick={toggleTheme}
+              title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+            >
+              {theme === 'light' ? (
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="5" />
+                  <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
