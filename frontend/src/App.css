@@ -468,6 +468,7 @@ body {
   border-radius: 6px;
   overflow: hidden;
   background: var(--bg-secondary);
+  min-height: 400px;
 }
 
 .viz-placeholder {

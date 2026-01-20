@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Plot from 'react-plotly.js';
+import Plotly from 'plotly.js-dist-min';
 import type { QueryResult, PlotlyConfig } from '../types';
 import { runInSandbox } from '../utils/sandbox';
 import { generateVisualizationScript } from '../services/api';
@@ -46,6 +47,17 @@ export function Visualization({
   const [isRunningScript, setIsRunningScript] = useState(false);
   const [isGeneratingScript, setIsGeneratingScript] = useState(false);
   const lastAutoRunScript = useRef<string | null>(null);
+  const plotContainerRef = useRef<HTMLDivElement>(null);
+
+  // Helper to purge the plot before updating
+  const purgePlot = () => {
+    if (plotContainerRef.current) {
+      const plotDiv = plotContainerRef.current.querySelector('.js-plotly-plot');
+      if (plotDiv) {
+        Plotly.purge(plotDiv as HTMLElement);
+      }
+    }
+  };
 
   useEffect(() => {
     if (vizConfig) {
@@ -76,18 +88,28 @@ export function Visualization({
     if (vizScript && result && !vizConfig && lastAutoRunScript.current !== vizScript) {
       lastAutoRunScript.current = vizScript;
       setScriptError(null);
-      runInSandbox(vizScript, result.columns, result.rows).then((sandboxResult) => {
-        if (sandboxResult.success && sandboxResult.result) {
-          const config = sandboxResult.result as PlotlyConfig;
-          if (config.data && config.layout) {
-            onConfigChange(config);
+
+      // Delay execution to ensure DOM is ready (helps with map plots)
+      const timeoutId = setTimeout(() => {
+        console.log('Auto-running script with', result.rows.length, 'rows');
+        runInSandbox(vizScript, result.columns, result.rows).then((sandboxResult) => {
+          console.log('Sandbox result:', sandboxResult.success, sandboxResult.error);
+          if (sandboxResult.success && sandboxResult.result) {
+            const config = sandboxResult.result as PlotlyConfig;
+            console.log('Config data type:', config.data?.[0]?.type, 'has geo:', !!config.layout?.geo);
+            if (config.data && config.layout) {
+              purgePlot();
+              onConfigChange(config);
+            } else {
+              setScriptError('Saved script returned invalid config');
+            }
           } else {
-            setScriptError('Saved script returned invalid config');
+            setScriptError(sandboxResult.error || 'Failed to run saved script');
           }
-        } else {
-          setScriptError(sandboxResult.error || 'Failed to run saved script');
-        }
-      });
+        });
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
     }
   }, [vizScript, result, vizConfig, onConfigChange]);
 
@@ -118,6 +140,7 @@ export function Visualization({
       if (sandboxResult.success && sandboxResult.result) {
         const config = sandboxResult.result as PlotlyConfig;
         if (config.data && config.layout) {
+          purgePlot();
           onConfigChange(config);
         } else {
           setScriptError('Script must return an object with "data" and "layout" properties');
@@ -156,6 +179,7 @@ export function Visualization({
         if (!config.data || !config.layout) {
           throw new Error('Script must return an object with "data" and "layout" properties');
         }
+        purgePlot();
         onScriptChange(scriptText);
         onConfigChange(config);
       } catch (e) {
@@ -197,7 +221,7 @@ export function Visualization({
 
       {vizConfig && (
         <>
-          <div className="viz-plot">
+          <div className="viz-plot" ref={plotContainerRef}>
             <Plot
               data={vizConfig.data}
               layout={{
