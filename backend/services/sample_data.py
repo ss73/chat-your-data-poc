@@ -1,6 +1,8 @@
 import random
 from datetime import datetime, timedelta
 
+from .security_data import generate_security_data
+
 # Shared name data
 FIRST_NAMES = ["Alice", "Bob", "Carol", "David", "Emma", "Frank", "Grace", "Henry",
                "Ivy", "Jack", "Kate", "Leo", "Mia", "Noah", "Olivia", "Paul",
@@ -24,6 +26,10 @@ DATASETS = {
     "support": {
         "name": "Support Tickets",
         "description": "Tickets, customers, and agents"
+    },
+    "security": {
+        "name": "Security Patrolling",
+        "description": "Sites, patrol specifications, checkpoints, and patrol reports"
     }
 }
 
@@ -371,6 +377,7 @@ def generate_sample_data(dataset: str = "sales"):
         "hr": generate_hr_data,
         "inventory": generate_inventory_data,
         "support": generate_support_data,
+        "security": generate_security_data,
     }
     if dataset not in generators:
         raise ValueError(f"Unknown dataset: {dataset}")

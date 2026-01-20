@@ -37,6 +37,12 @@ const DATASET_SUGGESTIONS: Record<string, string[]> = {
     'What is the average resolution time by category?',
     'Show open tickets by customer plan',
   ],
+  security: [
+    'How many patrols had deviations last month?',
+    'Which sites have the most checkpoints?',
+    'Show patrol reports with deviations by site',
+    'Which officers completed the most patrols?',
+  ],
 };
 
 function App() {
