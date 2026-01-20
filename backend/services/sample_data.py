@@ -84,7 +84,8 @@ def generate_sales_data():
         })
 
     sales = []
-    start_date = datetime(2024, 1, 1)
+    end_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    start_date = end_date - timedelta(days=365)
     for i in range(1, 501):
         product = random.choice(products)
         customer = random.choice(customers)
@@ -159,7 +160,7 @@ def generate_hr_data():
                 used_names.add(name)
                 break
         dept = random.choice(departments)
-        hire_date = datetime(2018, 1, 1) + timedelta(days=random.randint(0, 2000))
+        hire_date = datetime.now() - timedelta(days=random.randint(0, 2500))
         salary = random.randint(50, 200) * 1000
         employees.append({
             "id": i, "name": name,
@@ -329,7 +330,8 @@ def generate_support_data():
     # Tickets - ensure a realistic distribution of statuses
     # ~20% open, ~15% in_progress, ~10% waiting, ~30% resolved, ~25% closed
     tickets = []
-    start_date = datetime(2024, 1, 1)
+    end_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    start_date = end_date - timedelta(days=300)
     status_weights = ["open"] * 20 + ["in_progress"] * 15 + ["waiting_on_customer"] * 10 + ["resolved"] * 30 + ["closed"] * 25
 
     for i in range(1, 301):

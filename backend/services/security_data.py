@@ -300,8 +300,8 @@ def generate_security_data():
     report_id_counter = 1
     report_cp_id_counter = 1
 
-    # 6 months ago from "today" (using a fixed date for reproducibility)
-    end_date = datetime(2024, 10, 15)
+    # 6 months of data ending today
+    end_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     start_date = end_date - timedelta(days=180)
 
     current_date = start_date
