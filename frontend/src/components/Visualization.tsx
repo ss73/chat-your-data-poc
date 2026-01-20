@@ -175,6 +175,11 @@ export function Visualization({
           type="text"
           value={hint}
           onChange={(e) => setHint(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && canVisualize && !isGeneratingScript) {
+              handleVisualize();
+            }
+          }}
           placeholder="Chart type hint (optional, e.g., 'bar chart', 'line graph')"
           className="viz-hint-input"
           disabled={!canVisualize || isGeneratingScript}
