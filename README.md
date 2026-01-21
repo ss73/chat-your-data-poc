@@ -14,6 +14,7 @@ A proof-of-concept web application that lets you query business data using natur
 - **Save & Restore** - Save queries with their visualization scripts to localStorage
 - **Dark/Light Theme** - Toggle between themes with automatic persistence
 - **Editable SQL** - Modify generated SQL and re-run queries directly
+- **Excel Export** - Download query results as an Excel file
 
 ## Architecture
 
@@ -131,6 +132,7 @@ The app includes 5 realistic sample datasets:
 | Frontend | react-data-grid | Spreadsheet-like table display |
 | Frontend | Plotly.js | Visualization rendering |
 | Frontend | @xyflow/react | ERD diagram visualization |
+| Frontend | SheetJS (xlsx) | Excel file export |
 | Frontend | Web Worker | Secure sandbox for scripts |
 | Backend | FastAPI | REST API server |
 | Backend | Azure OpenAI SDK | LLM integration |

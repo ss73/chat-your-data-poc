@@ -47,6 +47,7 @@ A web application that allows users to chat with business data using natural lan
 | Frontend | react-data-grid | Spreadsheet-like table display |
 | Frontend | Plotly.js | Visualization rendering |
 | Frontend | @xyflow/react | ERD diagram visualization |
+| Frontend | SheetJS (xlsx) | Excel file export |
 | Frontend | Web Worker | Secure sandbox for visualization scripts |
 | Frontend | localStorage | Persist saved queries and scripts |
 | Backend | Python 3.11+ FastAPI | REST API server |
@@ -149,6 +150,7 @@ chat-your-data-poc/
 4. **Editable SQL** - Allow users to modify generated SQL and re-run
 5. **Chart Customization** - Hint input for chart type, custom script editor
 6. **Theme-aware Charts** - Plotly charts adapt to light/dark theme
+7. **Excel Export** - Download query results as Excel files using SheetJS
 
 ## API Endpoints
 

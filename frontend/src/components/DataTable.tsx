@@ -1,4 +1,5 @@
 import { DataGrid } from 'react-data-grid';
+import * as XLSX from 'xlsx';
 import type { QueryResult } from '../types';
 import 'react-data-grid/lib/styles.css';
 
@@ -14,6 +15,16 @@ interface DataTableProps {
 
 export function DataTable({ result, sql, onSqlChange, onRunSql, isRunning }: DataTableProps) {
   const hasResults = result && result.rows.length > 0;
+
+  const handleDownloadExcel = () => {
+    if (!result) return;
+
+    const worksheetData = [result.columns, ...result.rows];
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Results');
+    XLSX.writeFile(workbook, 'query-results.xlsx');
+  };
 
   const columns = hasResults
     ? result.columns.map((col) => ({
@@ -64,7 +75,10 @@ export function DataTable({ result, sql, onSqlChange, onRunSql, isRunning }: Dat
             />
           </div>
           <div className="row-count">
-            {result.rows.length} row{result.rows.length !== 1 ? 's' : ''}
+            <span>{result.rows.length} row{result.rows.length !== 1 ? 's' : ''}</span>
+            <button className="download-excel-btn" onClick={handleDownloadExcel}>
+              Download Excel
+            </button>
           </div>
         </>
       ) : (
