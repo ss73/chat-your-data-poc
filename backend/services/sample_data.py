@@ -120,14 +120,14 @@ def generate_sales_data():
 # ============== HR DATASET ==============
 
 DEPARTMENTS = [
-    ("Engineering", "San Francisco"),
-    ("Product", "San Francisco"),
-    ("Sales", "New York"),
-    ("Marketing", "New York"),
-    ("HR", "Chicago"),
-    ("Finance", "Chicago"),
-    ("Operations", "Austin"),
-    ("Customer Success", "Austin"),
+    ("Engineering", "San Francisco", 37.7749, -122.4194),
+    ("Product", "San Francisco", 37.7849, -122.4094),
+    ("Sales", "New York", 40.7128, -74.0060),
+    ("Marketing", "New York", 40.7228, -73.9960),
+    ("HR", "Chicago", 41.8781, -87.6298),
+    ("Finance", "Chicago", 41.8881, -87.6198),
+    ("Operations", "Austin", 30.2672, -97.7431),
+    ("Customer Success", "Austin", 30.2772, -97.7331),
 ]
 
 JOB_TITLES = {
@@ -148,8 +148,8 @@ def generate_hr_data():
     random.seed(43)
 
     departments = []
-    for i, (name, location) in enumerate(DEPARTMENTS, start=1):
-        departments.append({"id": i, "name": name, "location": location})
+    for i, (name, location, lat, lon) in enumerate(DEPARTMENTS, start=1):
+        departments.append({"id": i, "name": name, "location": location, "lat": lat, "lon": lon})
 
     employees = []
     used_names = set()
@@ -184,8 +184,8 @@ def generate_hr_data():
     return {
         "tables": {
             "departments": {
-                "columns": ["id", "name", "location"],
-                "rows": [[d["id"], d["name"], d["location"]] for d in departments]
+                "columns": ["id", "name", "location", "lat", "lon"],
+                "rows": [[d["id"], d["name"], d["location"], d["lat"], d["lon"]] for d in departments]
             },
             "employees": {
                 "columns": ["id", "name", "department_id", "title", "hire_date", "salary"],
