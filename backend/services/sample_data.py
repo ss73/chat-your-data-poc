@@ -214,22 +214,57 @@ SUPPLIERS = [
     ("OfficeMax Supply", "Office Supplies", "USA"),
     ("Global Imports", "Electronics", "Taiwan"),
     ("Quality Furnishings", "Furniture", "Mexico"),
+    ("ElectroWorld", "Electronics", "South Korea"),
+    ("HomeStyle Co", "Furniture", "Vietnam"),
+    ("PaperTrade LLC", "Office Supplies", "Canada"),
+    ("TechnoGadgets", "Electronics", "Japan"),
+    ("ModernOffice", "Furniture", "USA"),
+    ("SupplyChain Direct", "Office Supplies", "China"),
+    ("SmartDevice Corp", "Electronics", "China"),
+    ("ErgoFurniture", "Furniture", "Germany"),
+    ("ValueSupplies", "Office Supplies", "Mexico"),
+    ("PremiumTech", "Electronics", "Taiwan"),
 ]
 
-INVENTORY_PRODUCTS = [
-    ("Widget A", "Electronics", 29.99, "TechSource Inc"),
-    ("Widget B", "Electronics", 49.99, "Global Imports"),
-    ("Gadget X", "Electronics", 99.99, "TechSource Inc"),
-    ("Gadget Y", "Electronics", 149.99, "Global Imports"),
-    ("Chair Basic", "Furniture", 89.99, "FurniturePlus"),
-    ("Chair Deluxe", "Furniture", 199.99, "Quality Furnishings"),
-    ("Desk Standard", "Furniture", 249.99, "FurniturePlus"),
-    ("Desk Executive", "Furniture", 499.99, "Quality Furnishings"),
-    ("Paper A4", "Office Supplies", 9.99, "OfficeMax Supply"),
-    ("Pens Box", "Office Supplies", 14.99, "OfficeMax Supply"),
-    ("Stapler Pro", "Office Supplies", 24.99, "OfficeMax Supply"),
-    ("Binders Pack", "Office Supplies", 19.99, "OfficeMax Supply"),
-]
+# Product templates for generating 200 products
+PRODUCT_TEMPLATES = {
+    "Electronics": {
+        "prefixes": ["Smart", "Pro", "Ultra", "Mini", "Mega", "Nano", "Digital", "Wireless", "Portable", "Advanced"],
+        "items": ["Widget", "Gadget", "Device", "Monitor", "Speaker", "Charger", "Hub", "Adapter", "Controller", "Sensor"],
+        "price_range": (19.99, 299.99),
+        "suppliers": ["TechSource Inc", "Global Imports", "ElectroWorld", "TechnoGadgets", "SmartDevice Corp", "PremiumTech"],
+    },
+    "Furniture": {
+        "prefixes": ["Basic", "Deluxe", "Premium", "Compact", "Executive", "Ergonomic", "Modern", "Classic", "Adjustable", "Standing"],
+        "items": ["Chair", "Desk", "Table", "Cabinet", "Shelf", "Bookcase", "Drawer", "Bench", "Stool", "Workstation"],
+        "price_range": (49.99, 599.99),
+        "suppliers": ["FurniturePlus", "Quality Furnishings", "HomeStyle Co", "ModernOffice", "ErgoFurniture"],
+    },
+    "Office Supplies": {
+        "prefixes": ["Standard", "Professional", "Economy", "Bulk", "Premium", "Recycled", "Heavy-Duty", "Multi-Pack", "Value", "Deluxe"],
+        "items": ["Paper", "Pens", "Stapler", "Binders", "Folders", "Tape", "Scissors", "Markers", "Clips", "Labels"],
+        "price_range": (4.99, 49.99),
+        "suppliers": ["OfficeMax Supply", "PaperTrade LLC", "SupplyChain Direct", "ValueSupplies"],
+    },
+}
+
+def generate_products(count=200):
+    """Generate a list of products across categories."""
+    random.seed(44)
+    products = []
+    categories = list(PRODUCT_TEMPLATES.keys())
+
+    for i in range(count):
+        category = categories[i % len(categories)]
+        template = PRODUCT_TEMPLATES[category]
+        prefix = random.choice(template["prefixes"])
+        item = random.choice(template["items"])
+        name = f"{prefix} {item} {i + 1}"
+        price = round(random.uniform(*template["price_range"]), 2)
+        supplier = random.choice(template["suppliers"])
+        products.append((name, category, price, supplier))
+
+    return products
 
 
 def generate_inventory_data():
@@ -245,7 +280,8 @@ def generate_inventory_data():
 
     products = []
     supplier_map = {s["name"]: s["id"] for s in suppliers}
-    for i, (name, category, price, supplier_name) in enumerate(INVENTORY_PRODUCTS, start=1):
+    generated_products = generate_products(200)
+    for i, (name, category, price, supplier_name) in enumerate(generated_products, start=1):
         products.append({
             "id": i, "name": name, "category": category,
             "unit_cost": price, "supplier_id": supplier_map[supplier_name]
@@ -255,13 +291,15 @@ def generate_inventory_data():
     for product in products:
         for warehouse in warehouses:
             qty = random.randint(0, 500)
-            reorder = random.randint(20, 100)
+            reorder_level = random.randint(20, 100)
+            reorder_target = reorder_level + random.randint(50, 150)
             stock_levels.append({
                 "id": len(stock_levels) + 1,
                 "product_id": product["id"],
                 "warehouse_id": warehouse["id"],
                 "quantity": qty,
-                "reorder_level": reorder
+                "reorder_level": reorder_level,
+                "reorder_target": reorder_target
             })
 
     return {
@@ -279,8 +317,8 @@ def generate_inventory_data():
                 "rows": [[p["id"], p["name"], p["category"], p["unit_cost"], p["supplier_id"]] for p in products]
             },
             "stock_levels": {
-                "columns": ["id", "product_id", "warehouse_id", "quantity", "reorder_level"],
-                "rows": [[s["id"], s["product_id"], s["warehouse_id"], s["quantity"], s["reorder_level"]] for s in stock_levels]
+                "columns": ["id", "product_id", "warehouse_id", "quantity", "reorder_level", "reorder_target"],
+                "rows": [[s["id"], s["product_id"], s["warehouse_id"], s["quantity"], s["reorder_level"], s["reorder_target"]] for s in stock_levels]
             }
         }
     }
